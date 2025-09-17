@@ -89,13 +89,9 @@ def stop_and_delete_instance():
 
 def lambda_handler(event, context):       
     print(event)
-    action = event['action']    
-    key_name = event['key_name']
-    # action = json.loads(event.get('body', '{}')) # Extract JSON body
-    # action = payload.get('action') # Example input field
-
-
-    # action = str(event)
+    # action = event['action']   #when using lambda test events 
+    # key_name = event['key_name']
+    action = str(event)    #when using api invokation
     print("Action: ", action)
     if action == "1":
         status_code,body = create_and_start_instance(key_name)
