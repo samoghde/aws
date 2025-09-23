@@ -13,10 +13,22 @@ access_token = "<your-access-token>"
 decoded_token = jwt.decode(access_token, keys, algorithms=["RS256"], audience="<your-client-id>")
 print(decoded_token)
 
+#for Identity Pool
+client = boto3.client('cognito-identity', region_name='<your-region>')
+response = client.get_id(
+   IdentityPoolId='<identity-pool-id>',
+   Logins={
+       f'cognito-idp.<region>.amazonaws.com/<user_pool_id>': access_token
+   }
+)
+identity_id = response['IdentityId']
+print(identity_id)
+
 region = 'ap-south-1' 
 ami_id = 'ami-0b982602dbb32c5bd'
 instance_type = 't2.micro'
 security_group_id = 'sg-04bc4018472f19b46'
+
 
 def get_running_instances(): 
     ec2_client = boto3.client('ec2', region_name=region)
