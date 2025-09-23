@@ -1,5 +1,17 @@
 import json
 import boto3
+import jwt
+import requests
+# Fetch Cognito public keys
+region = "<your-region>"
+user_pool_id = "<your-user-pool-id>"
+keys_url = f"https://cognito-idp.{region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json"
+response = requests.get(keys_url)
+keys = response.json()["keys"]
+# Decode and validate token
+access_token = "<your-access-token>"
+decoded_token = jwt.decode(access_token, keys, algorithms=["RS256"], audience="<your-client-id>")
+print(decoded_token)
 
 region = 'ap-south-1' 
 ami_id = 'ami-0b982602dbb32c5bd'
