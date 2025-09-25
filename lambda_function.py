@@ -96,14 +96,14 @@ def create_and_start_instance(key_name):
         print(f"Error creating and starting instance: {e}")
         return(500, {'message': 'Error creating and starting instance', 'error': str(e)})
 
-def stop_and_delete_instance():
+def stop_and_delete_instance(instance_id):
     ec2_client = boto3.client('ec2', region_name=region)
     try:
-        instances = ec2_client.describe_instances(Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
-        if not instances['Reservations']:
+        instances = get_running_instances()
+        if instance_id not in instances:
             print("No running instances found to stop and delete.")
             return(500, {'message': 'No running instances found to stop and delete'})
-        instance_id = instances['Reservations'][0]['Instances'][0]['InstanceId']
+        
         response = ec2_client.terminate_instances(InstanceIds=[instance_id])
         print(f"Instance stopped and deleted successfully. Instance ID: {instance_id}")
         return(200,{'message': 'Instance terminated', 'instance_id': instance_id})
@@ -120,7 +120,7 @@ def lambda_handler(event, context):
     if action == "1":
         status_code,body = create_and_start_instance(key_name)
     elif action == "2":
-        status_code,body = stop_and_delete_instance()
+        status_code,body = stop_and_delete_instance(instance_id)
     else:
         status_code = 500
         body = {'message': 'Invalid action'}
